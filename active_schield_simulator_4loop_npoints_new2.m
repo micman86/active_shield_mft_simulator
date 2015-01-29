@@ -114,8 +114,8 @@ for time = shielding_time_step: shielding_time_step: simulation_duration
     %% optimization
     
       if enable_optimization == 1
-          %evaluation_index(index) = 1*B_tot(1,index) + 1.8*B_tot(2,index) + 1.5*B_tot(3,index) + 1*B_tot(4,index);
-          evaluation_index(index) = weights_eval .* B_tot(:,index);
+          
+          evaluation_index(index) = sum(weights_eval .* B_tot(:,index));
                 
             if (index > 50 && isnan(detected_B(index)) == false)
                 
@@ -163,7 +163,7 @@ end
 
 
 
-% 
+
 % h2 = plot(time_array,evaluation_index,time_array,B_tot(1,:),time_array,B_tot(2,:),time_array,B_tot(3,:),time_array,B_tot(4,:),time_array,optimization_factor(:,1),time_array,optimization_factor(:,2),time_array,optimization_factor(:,5),time_array,optimization_factor(:,6),'linewidth',3);
 % legend(h2,'eval idx','B 1 (uT)','B 2 (uT)', 'B 3 (uT)', 'B 4 (uT)','Perturbation modulus 1 (%)','Perturbation phase 1 (%)','Perturbation modulus 3 (%)','Perturbation phase 3 (%)')
 % xlabel('Time (s)','Fontsize',18);
@@ -190,10 +190,10 @@ set(gcf,'color',[1 1 1]);
 set(gca,'FontSize',18)
 grid on
 
-
+sprintf('shielding currents')
 shielding_current(index,:)
 
-sigma
-
+%sigma
+sprintf('B tot')
 B_tot(:,index)
 

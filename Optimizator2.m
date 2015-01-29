@@ -26,7 +26,7 @@ classdef Optimizator2
            obj.optimization_factor_last(1:2*obj.num_loops) = 100*ones(2*obj.num_loops,1); %percent of modulus and angle
           
         obj.range_optimization_search_sigma = 90; %percent value of sigma for search of optimum value
-        obj.perturbation = 0.03;
+        obj.perturbation = 0.02;
        obj.num_of_variable_to_optimize = 2*obj.num_loops; %modulus and angle of SIGMA
        obj.last_evaluation_index = 0;
        obj.internal_step = 1;
@@ -40,7 +40,11 @@ classdef Optimizator2
             
             obj.evaluation_index = eval_index;
             
-            obj.optimization_factor = obj.optimization_factor_last; 
+             if obj.internal_step==1
+           obj.last_evaluation_index = obj.evaluation_index;
+           end
+            
+            obj.optimization_factor = obj.optimization_factor_last;
            
             if obj.internal_step>0 && obj.internal_step <= obj.num_of_variable_to_optimize
                 obj.optimization_factor(obj.internal_step) = obj.optimization_factor(obj.internal_step) * (1 + obj.perturbation);
@@ -49,25 +53,15 @@ classdef Optimizator2
             if obj.last_perturbed_variable > 0 && obj.last_perturbed_variable <= obj.num_of_variable_to_optimize
                obj.grad(obj.last_perturbed_variable) = (obj.evaluation_index - obj.last_evaluation_index) / (obj.perturbation * obj.optimization_factor(obj.last_perturbed_variable));
                % obj.grad(obj.last_perturbed_variable) = (obj.evaluation_index - obj.last_evaluation_index);
-               % obj.optimization_factor(obj.last_perturbed_variable) = obj.optimization_factor(obj.last_perturbed_variable) / (1 + obj.perturbation);
-                obj.alpha_min = min([obj.alpha_min abs(obj.evaluation_index - obj.last_evaluation_index)]);
-                obj.alpha_max = max([obj.alpha_max abs(obj.evaluation_index - obj.last_evaluation_index)]);
+               obj.alpha_min = min([obj.alpha_min abs(obj.evaluation_index - obj.last_evaluation_index)]);
+               obj.alpha_max = max([obj.alpha_max abs(obj.evaluation_index - obj.last_evaluation_index)]);
             end
             
             
             obj.last_perturbed_variable = obj.internal_step;
-            
-            
-            
-           if obj.internal_step==1
-           obj.last_evaluation_index = obj.evaluation_index;
-           end
-                
-           
-           
+                    
            
           
-           
             if obj.internal_step > obj.num_of_variable_to_optimize
                if (obj.alpha_min==0) 
                    obj.alpha_min=0.1;
@@ -75,15 +69,16 @@ classdef Optimizator2
                if (obj.alpha_max==0) 
                    obj.alpha_max=0.1;
                end
-               alpha = abs(0.01/obj.alpha_min + 0.09/obj.alpha_max)/2;
+               %alpha = (abs(0.01/obj.alpha_min) + abs(0.08/obj.alpha_max))/5;
+               alpha = 5*(abs(obj.alpha_min) + abs(obj.alpha_max));
                
                for u=1 : obj.num_of_variable_to_optimize
                    var = abs( alpha * obj.grad(u));
                    if var <0.005
                        var = 0.005;
                    end
-                   if var >0.09
-                       var = 0.09;
+                   if var >0.016
+                       var = 0.16;
                    end
                    %var = 0.02;
                    var = var * sign(alpha * obj.grad(u)) * -1;

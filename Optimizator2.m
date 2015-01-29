@@ -79,8 +79,8 @@ classdef Optimizator2
                
                for u=1 : obj.num_of_variable_to_optimize
                    var = abs( alpha * obj.grad(u));
-                   if var <0.01
-                       var = 0.01;
+                   if var <0.005
+                       var = 0.005;
                    end
                    if var >0.09
                        var = 0.09;
@@ -105,7 +105,7 @@ classdef Optimizator2
                obj.alpha_max = 0;
            end
                  
-           obj.internal_step = obj.internal_step + 1; 
+           obj.internal_step = obj.internal_step + 1;
            
            if obj.internal_step > obj.num_of_variable_to_optimize + 1
                obj.internal_step = 1;
